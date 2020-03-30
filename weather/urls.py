@@ -1,4 +1,4 @@
-"""django_weather URL Configuration
+"""django_weatherProject URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.0/topics/http/urls/
@@ -14,7 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
+from . import views
+
+app_name = 'weather'
 
 urlpatterns = [
-    path('', include('weather.urls'))
+    path('', views.index, name='index'),
+    # path('<int:city_id>/', views.detail, name='detail'),
+    # path('<int:city_id>/citydata/', views.citydata, name='citydata')
 ]
