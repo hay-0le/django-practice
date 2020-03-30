@@ -1,10 +1,10 @@
 import requests
+import os
+from decouple import config
 from django.shortcuts import render, get_list_or_404, get_object_or_404
 from django.http import HttpResponseRedirect
 from .models import StarredCity, CityWeatherData
 from .forms import CityForm
-
-# Create your views here.
 
 #get full state name
 def getStateName(state_initials):
@@ -67,6 +67,7 @@ def getStateName(state_initials):
 
 #Search Cities
 def index(request):
+    API_KEY = config("API_KEY")
     url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid=bc8fdc1c8cf8248eadf944a93af0b431'
 
     if request.method == 'POST':
