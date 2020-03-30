@@ -1,0 +1,17 @@
+# Django #
+*.log
+*.pot
+*.pyc
+__pycache__
+media
+
+# Backup files # 
+*.bak 
+
+# Installer logs 
+pip-log.txt 
+pip-delete-this-directory.txt 
+
+# Environments 
+.env 
+.venv 
