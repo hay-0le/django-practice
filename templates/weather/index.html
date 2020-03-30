@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <!--Add City Form-->
+    {% include 'partials/_addCity-form.html' %}
+
+    {% if cities_weather_data %}
+        <h1 class="text-center mb-3"> Your Cities:</h1>
+        {% for city in cities_weather_data %}
+            <div class="card mb-3 mx-auto" style="width: 18rem;">
+                <div class="card-body mx-auto">
+                    <img src="http://openweathermap.org/img/w/{{ city.icon }}.png" alt="Image">
+                    <p> {{city.temperature }}&#176;</p>
+                    <p class="lead">{{ city.city }}</p>
+                   
+                </div>
+            </div>
+        {% endfor %}
+
+    {% else %}
+        <p>You have no saved cities</p>
+
+    {% endif %}
+{% endblock %}        
+
+
+<!-- TODO: Add anchor tags back in to route to city details page-->
+ <!-- <a href="{% url 'weather:detail' city.city_id %}" class="btn btn-primary btn-sm">Get City's Weather</a>
+      <a href="{% url 'weather:citydata' city.city_id %}" class="btn btn-secondary btn-sm">City Data</a>
+-->

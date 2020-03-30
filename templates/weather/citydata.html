@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <a class="btn btn-secondary btn-sm mb-3" href="{% url 'weather:index' %}">Back to Cities</a>
+    
+    <h1 class="text-center mb-3">{{ city.city_name }}</h1>
+
+    {% if error_message %}
+        <p class="alert alert-danger"> <strong>{{ error_message }}</strong></p>
+
+    {% endif %}
+
+    <form action="{% url 'weather:delete' city.city_id %}" method="POST">
+        {% csft_toke %}
+        <div class="form-delete">
+            <input
+                type="checkbox"
+                name="delete"
+                class="form-delete-input"
+                value="{{ city.city_id }}"
+            />
+        </div>
+        <input type="submit" name="delete" class="btn btn-default btn-danger" />
+    </form>
+{% endblock %}        
