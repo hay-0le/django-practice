@@ -11,7 +11,7 @@
                 <div class="card-body mx-auto">
                     <img src="http://openweathermap.org/img/w/{{ city.icon }}.png" alt="Image">
                     <p> {{city.temperature }}&#176;</p>
-                    <p class="lead">{{ city.city }}</p>
+                    <a href="{% url 'weather:city_weather_details' city.city_id%}">{{ city.city }}</a>
                    
                 </div>
             </div>
