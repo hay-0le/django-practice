@@ -6,6 +6,8 @@ from django.http import HttpResponseRedirect
 from .models import StarredCity, CityWeatherData
 from .forms import CityForm
 
+# API_KEY = config("API_KEY")
+
 #get full state name
 def getStateName(state_initials):
     state = state_initials.upper()
@@ -68,11 +70,10 @@ def getStateName(state_initials):
 #Search Cities
 def index(request):
     API_KEY = config("API_KEY")
-    url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid=bc8fdc1c8cf8248eadf944a93af0b431'
-
+    url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid=' + API_KEY
+   
     if request.method == 'POST':
         form = CityForm(request.POST)
-        
         
         if form.is_valid():
             new_city, sep, state = form.cleaned_data['city_name'].partition(',')
@@ -88,8 +89,8 @@ def index(request):
             # return HttpResponseRedirect('/weather')
 
         #TODO form reset, but still sending duplicates to db
-        form = CityForm()
-        print("resetting form", form)
+    form = CityForm()
+    print("resetting form", form)
 
     starred_cities_list = StarredCity.objects.order_by('-city_name')
     cities_weather_data = []
@@ -99,6 +100,7 @@ def index(request):
 
         city_weather = {
             'city': city.city_name.capitalize(),
+            'city_id': r['id'],
             'temperature': round(r['main']['temp'], 1),
             'icon': r['weather'][0]['icon'],
             # 'isHome': city.isHome,
@@ -110,9 +112,37 @@ def index(request):
     return render(request, 'weather/index.html', context)
 
 #Show detailed weather data for chosen city
-def detail(request, city_id):
-    try:
-        city = StarredCity.objects.get(pk=city_id)
-    except StarredCity.DoesNotExist:
-        raise Http404("City does not exist")
-    return render(request, 'weather/citydata.html', { 'city': city})
+def city_weather_details(request, city_id):
+    API_KEY = config("API_KEY")
+
+    url = 'http://api.openweathermap.org/data/2.5/weather?id={}&units=imperial&appid=' + API_KEY
+    
+
+    r = requests.get(url.format(city_id)).json()
+
+    coordinates = {
+        'lat': r['coord']['lat'],
+        'lon': r['coord']['lon']
+    }
+
+    city_data = {
+        'city_id': city_id,
+        'city_name': r['name'],
+        'country': r['sys']['country'],
+        'description': r['weather'][0]['description'],
+        'temperature': round(r['main']['temp'], 1),
+        'temperature_min': round(r['main']['temp_min'], 1),
+        'temperature_max': round(r['main']['temp_max'], 1),
+        'temperature_feels_like': round(r['main']['feels_like'], 1),
+        'clouds': r['clouds']['all'],
+        # 'rainfall_3h': r['rain']['3h'],
+        # 'snowfall_3h': r['snow']['3h'],
+        'pressure': round(r['main']['pressure'], 1),
+        'humidity': round(r['main']['humidity'], 1),
+        'icon': r['weather'][0]['icon'],
+        'sunrise': r['sys']['sunrise'],
+        'sunset': r['sys']['sunset'],
+
+    }
+
+    return render(request, 'weather/citydata.html', { 'city_data': city_data})
