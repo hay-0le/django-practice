@@ -1,12 +1,26 @@
 import requests
 import os
-from decouple import config
-from django.shortcuts import render, get_list_or_404, get_object_or_404
-from django.http import HttpResponseRedirect
-from .models import StarredCity, CityWeatherData
-from .forms import CityForm
 
-# API_KEY = config("API_KEY")
+from decouple import config
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponseRedirect
+from datetime import datetime
+
+from .forms import CityForm
+from .models import StarredCity 
+# import .models import CityWeatherData
+
+#Convert date/time from unix to YYYY:MM:DD HH:MM:SS format
+def formatTime(unix_time):
+    date_time = datetime.fromtimestamp(unix_time).strftime('%Y-%m-%d %H:%M:%S')
+
+    date, sep, time = date_time.partition(' ')
+
+    return {
+        "date": date,
+        "time": time
+    }
+    
 
 #get full state name
 def getStateName(state_initials):
@@ -67,6 +81,7 @@ def getStateName(state_initials):
 
     return states.get(state, "error")
 
+
 #Search Cities
 def index(request):
     API_KEY = config("API_KEY")
@@ -78,24 +93,25 @@ def index(request):
         if form.is_valid():
             new_city, sep, state = form.cleaned_data['city_name'].partition(',')
         
-            #openweathermaps api doesn't take in state abbreviations, so if user provides input that way, find full state name
-            #TODO why you no work?
+            #Openweathermaps api doesn't take in state abbreviations
+            #So if user provides input in that format, update state to full state name
+            #TODO figure out why this conditional works in an interpreter but not in here
             if len(state) and len(state) < 3:
                 state = getStateName(state)
 
             city_obj = StarredCity(city_name=new_city)
 
             city_obj.save()
-            # return HttpResponseRedirect('/weather')
 
-        #TODO form reset, but still sending duplicates to db
+    #TODO print shows that form resets, but is still sending duplicates to db on occasion
     form = CityForm()
-    print("resetting form", form)
+    # print("resetting form", form)
 
     starred_cities_list = StarredCity.objects.order_by('-city_name')
     cities_weather_data = []
 
     for city in starred_cities_list:
+        #Get city data from api
         r = requests.get(url.format(city.city_name)).json()
 
         city_weather = {
@@ -111,13 +127,13 @@ def index(request):
     context = {'cities_weather_data': cities_weather_data, 'form': form}
     return render(request, 'weather/index.html', context)
 
+
 #Show detailed weather data for chosen city
 def city_weather_details(request, city_id):
-    API_KEY = config("API_KEY")
 
+    API_KEY = config("API_KEY")
     url = 'http://api.openweathermap.org/data/2.5/weather?id={}&units=imperial&appid=' + API_KEY
     
-
     r = requests.get(url.format(city_id)).json()
 
     coordinates = {
@@ -129,20 +145,21 @@ def city_weather_details(request, city_id):
         'city_id': city_id,
         'city_name': r['name'],
         'country': r['sys']['country'],
-        'description': r['weather'][0]['description'],
+        'description': r['weather'][0]['description'].capitalize(),
         'temperature': round(r['main']['temp'], 1),
         'temperature_min': round(r['main']['temp_min'], 1),
         'temperature_max': round(r['main']['temp_max'], 1),
         'temperature_feels_like': round(r['main']['feels_like'], 1),
         'clouds': r['clouds']['all'],
+        'pressure': r['main']['pressure'],
+        'humidity': r['main']['humidity'],
+        'icon': r['weather'][0]['icon'],
+        'sunrise': formatTime(r['sys']['sunrise'])['time'],
+        'sunset': formatTime(r['sys']['sunset'])['time'],
+        'date': formatTime(r['sys']['sunset'])['date'],
+        'hireability': 'High',
         # 'rainfall_3h': r['rain']['3h'],
         # 'snowfall_3h': r['snow']['3h'],
-        'pressure': round(r['main']['pressure'], 1),
-        'humidity': round(r['main']['humidity'], 1),
-        'icon': r['weather'][0]['icon'],
-        'sunrise': r['sys']['sunrise'],
-        'sunset': r['sys']['sunset'],
-
     }
 
     return render(request, 'weather/citydata.html', { 'city_data': city_data})
