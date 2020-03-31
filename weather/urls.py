@@ -21,5 +21,4 @@ app_name = 'weather'
 urlpatterns = [
     path('', views.index, name='index'),
     path('<int:city_id>/', views.city_weather_details, name='city_weather_details'),
-    # path('<int:city_id>/citydata/', views.citydata, name='citydata')
 ]
