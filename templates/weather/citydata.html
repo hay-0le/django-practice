@@ -1,25 +1,98 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    
     <a class="btn btn-secondary btn-sm mb-3" href="{% url 'weather:index' %}">Back to Cities</a>
     
-    <h1 class="text-center mb-3">{{ city.city_name }}</h1>
+    <h1 class="text-center mb-3">{{ city_data.city_name }}</h1>
+    <h5 class="text-center mb-3">{{ city_data.date }}</h5>
+    
+    <div class='weather-data-cards' style='text-align: center;'>
+        
+        <div class='big-cards'>
+            <div class='card mb-3 mx-auto' style='width: 15rem;'>
+                <div class='card-body'>
+                    <img class='card-img-top' style="border-style: double; border-color: navy;" src="http://openweathermap.org/img/w/{{ city_data.icon }}.png" alt="Image">
+                    <p><strong>{{ city_data.temperature }}</strong>&#176;</p>
+                    <p><strong>{{ city_data.description }}</strong></p>
+                </div>
+            </div>
+        </div>
 
+
+        <div class='container small-cards'>
+            <div class='row'>
+                <div class='card mb-3 col-sm weather-card' >
+                    <div class='card-body'>
+                        <span>{{ city_data.temperature_min }}&#176;</span>
+                        <p><strong>Today's Max</strong></p>
+                    </div>
+                </div>
+                <div class='card mb-3 col-sm'>
+                    <div class='card-body'>
+                        <span>{{ city_data.temperature_max }}&#176;</span>
+                        <p><strong>Today's Min</strong></p>
+                    </div>
+                </div>
+                <div class='card mb-3 col-sm'>
+                    <div class='card-body'>
+                        <span>{{ city_data.temperature_feels_like }}&#176;</span>
+                        <p><strong>Feels Like</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class='row'>
+                <div class='card mb-3 col-sm'>
+                    <div class='card-body'>
+                        <span>{{ city_data.clouds }}%</span>
+                        <p><strong>Coverage</strong></p>
+                    </div>
+                </div>
+                <div class='card mb-3 col-sm'>
+                    <div class='card-body'>
+                        <span>{{ city_data.pressure }} hPa</span>
+                        <p><strong>Pressure</strong></p>
+                    </div>
+                </div>
+                <div class='card mb-3 col-sm'>
+                    <div class='card-body'>
+                        <span>{{ city_data.humidity }}%</span>
+                        <p><strong>Humidity</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class='row'>
+                <div class='card mb-3'>
+                    <div class='card-body'>
+                        <span>{{ city_data.sunrise }} am</span>
+                        <p><strong>Sunrise</strong></p>
+                    </div>
+                </div>
+                <div class='card mb-3'>
+                    <div class='card-body'>
+                        <span>{{ city_data.sunset }} pm</span>
+                        <p><strong>Sunset</strong></p>
+                    </div>
+                </div>
+                <div class='card mb-3'>
+                    <div class='card-body'>
+                        <span>{{ city_data.hireability }}</span>
+                        <p>(With a chance)</p>
+                        <p><strong>Hireability</strong></p>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+
+    </div>
     {% if error_message %}
         <p class="alert alert-danger"> <strong>{{ error_message }}</strong></p>
 
     {% endif %}
 
-    <form action="{% url 'weather:delete' city.city_id %}" method="POST">
-        {% csft_toke %}
-        <div class="form-delete">
-            <input
-                type="checkbox"
-                name="delete"
-                class="form-delete-input"
-                value="{{ city.city_id }}"
-            />
-        </div>
-        <input type="submit" name="delete" class="btn btn-default btn-danger" />
-    </form>
+    
 {% endblock %}        
