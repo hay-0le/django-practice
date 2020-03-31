@@ -1,13 +1,15 @@
 <div class="add-city-container">
+
     <form class="add-city-form" method="POST">
         {% csrf_token %}
         <div class="input-container" style="text-align: center;">
             <label for="newcityname">Find a new city:</label>
-            <!-- <input class="input" type="text" class="form-control" id="newcityname" placeholder="City Name" > -->
+
             {{ form.city_name }}
+
             <button type="submit" class="btn btn-primary">Add</button>
         </div>
-        <div class="btn-container">
-        </div>
+        
     </form>
+
 </div>
