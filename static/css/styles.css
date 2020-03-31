@@ -1,0 +1,26 @@
+h1 {
+    color: navy;
+}
+
+.row {
+    justify-content: center;
+}
+
+.card {
+    background-color:rgb(173, 180, 187);
+    border-style: double;
+    border-color: navy;
+    margin: 5px;
+    border-radius: 30px;
+    width: 10rem;
+}
+
+.btn {
+    justify-content: center;
+}
+
+.navbar {
+    display: flex; 
+    justify-content: space-between;
+    text-align: center;
+}
