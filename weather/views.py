@@ -3,7 +3,7 @@ import os
 
 from decouple import config
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from datetime import datetime
 
 from .forms import CityForm
@@ -81,12 +81,27 @@ def getStateName(state_initials):
 
     return states.get(state, "error")
 
+#Update home city
+def make_home(city_id):
+    
+    #Reset old home city is_home to false
+    if StarredCity.objects.filter(is_home=True).exists():
+        StarredCity.objects.filter(is_home=True).update(is_home=False)
+  
+    #update city at city_id to home
+    new_home = get_object_or_404(StarredCity, pk=city_id)
+    new_home.is_home=True
+    new_home.save()
 
 #Search Cities
-def index(request):
+def index(request, city_id = False):
     API_KEY = config("API_KEY")
     url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid=' + API_KEY
    
+   #If city_id passed in, update that city as home
+    if city_id:
+        make_home(city_id)
+
     if request.method == 'POST':
         form = CityForm(request.POST)
         
@@ -99,15 +114,17 @@ def index(request):
             if len(state) and len(state) < 3:
                 state = getStateName(state)
 
-            city_obj = StarredCity(city_name=new_city)
+            r = requests.get(url.format(new_city)).json()
+            #TODO handle error if city does not exist
 
+            city_obj = StarredCity(city_name=r['name'], city_id=r['id'])
             city_obj.save()
 
     #TODO print shows that form resets, but is still sending duplicates to db on occasion
     form = CityForm()
     # print("resetting form", form)
 
-    starred_cities_list = StarredCity.objects.order_by('-city_name')
+    starred_cities_list = StarredCity.objects.order_by('-is_home')
     cities_weather_data = []
 
     for city in starred_cities_list:
@@ -116,10 +133,10 @@ def index(request):
 
         city_weather = {
             'city': city.city_name.capitalize(),
-            'city_id': r['id'],
+            'city_id': city.city_id,
+            'is_home': city.is_home,
             'temperature': round(r['main']['temp'], 1),
             'icon': r['weather'][0]['icon'],
-            # 'isHome': city.isHome,
         }
 
         cities_weather_data.append(city_weather)
