@@ -8,14 +8,18 @@
         <h1 class="text-center mb-3"> Your Cities:</h1>
 
         {% for city in cities_weather_data %}
-            <div class="card mb-3 mx-auto" style="width: 18rem;">
-                <div class="card-body mx-auto">
+            <div class="card mb-3 mx-auto" style="width: 18rem; ">
+                <div class="card-body city-card mx-auto">
 
-                    <p> {{city.temperature }}&#176;</p>
-                    <img src="http://openweathermap.org/img/w/{{ city.icon }}.png" alt="Image">
-                    </br>
-                    <a href="{% url 'weather:city_weather_details' city.city_id%}">{{ city.city }}</a>
-                   
+                    <div id="city-home" style="padding-right: 5px; padding-left:5px;">
+                        <a href="{% url 'weather:city_weather_details' city.city_id %}" style="font-size: 1.4em; font-weight: bold;">{{ city.city }}  </a>
+                        <a href="{% url 'weather:make_home' city.city_id %}" {% if city.is_home %}id="my-home" {% endif %} class="home-btn waves-effect btn" ><i class="fa fa-home" aria-hidden="true"></i></a>
+                    </div>
+                    <div id="weather-img" style="text-align: center;">
+                        <img src="http://openweathermap.org/img/w/{{ city.icon }}.png" style="height: 70px; width:70px;" alt="Image">
+                    </div>
+                    <p style="font-size: 2em; text-align: center;"> {{city.temperature }}&#176;</p>
+                       
                 </div>
             </div>
         {% endfor %}

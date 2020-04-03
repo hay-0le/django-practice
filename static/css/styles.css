@@ -6,17 +6,53 @@ h1 {
     justify-content: center;
 }
 
+#welcome-card {
+    width: 500px;
+    height: 220px;
+}
+
 .card {
-    background-color:rgb(173, 180, 187);
+    background-color:rgb(182, 219, 255);
     border-style: double;
-    border-color: navy;
+    border-color: rgb(20, 20, 87);
     margin: 5px;
     border-radius: 30px;
-    width: 10rem;
+    width: 9rem;
+    height: 12rem;
+    box-shadow: 5px 8px #888888;
+}
+
+.city-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.weather-data-card {
+    height: 130px;
 }
 
 .btn {
     justify-content: center;
+}
+
+.home-btn {
+    justify-content: center;
+    padding: 2px 3px;
+    border-radius: 5px;
+    background-color:rgb(245, 245, 245);
+    border-style: groove;
+    border-color: rgb(231, 221, 129);
+}
+
+#my-home {
+    background-color: rgb(235, 212, 108);
+    border-style: double;
+    border-color: black; 
+    border-width: 3px;
+}
+
+.home-btn:active {
+    background-color: rgb(182, 182, 182);
 }
 
 .navbar {

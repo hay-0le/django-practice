@@ -2,7 +2,7 @@
 
 {% block content %}
     
-    <a class="btn btn-secondary btn-sm mb-3" href="{% url 'weather:index' %}">Back to Cities</a>
+    <a class="btn btn-secondary btn-sm mb-3" style='float: left;' href="{% url 'weather:index' %}">Back to Cities</a>
     
     <h1 class="text-center mb-3">{{ city_data.city_name }}</h1>
     <h5 class="text-center mb-3">{{ city_data.date }}</h5>
@@ -10,9 +10,9 @@
     <div class='weather-data-cards' style='text-align: center;'>
         
         <div class='big-cards'>
-            <div class='card mb-3 mx-auto' style='width: 15rem;'>
+            <div class='card mb-3 mx-auto' style='width: 15rem; height: 20rem; font-size: 1.4em;'>
                 <div class='card-body'>
-                    <img class='card-img-top' style="border-style: double; border-color: navy;" src="http://openweathermap.org/img/w/{{ city_data.icon }}.png" alt="Image">
+                    <img class='card-img-top' style="border-style: double; border-radius: 30px; border-color: navy; background-color: rgb(225, 252, 252);" src="http://openweathermap.org/img/w/{{ city_data.icon }}.png" alt="Image">
                     <p><strong>{{ city_data.temperature }}</strong>&#176;</p>
                     <p><strong>{{ city_data.description }}</strong></p>
                 </div>
@@ -22,65 +22,65 @@
 
         <div class='container small-cards'>
             <div class='row'>
-                <div class='card mb-3 col-sm weather-card' >
+                <div class='card mb-3 col-sm weather-data-card' >
                     <div class='card-body'>
-                        <span>{{ city_data.temperature_min }}&#176;</span>
                         <p><strong>Today's Max</strong></p>
+                        <span>{{ city_data.temperature_min }}&#176;</span>
                     </div>
                 </div>
-                <div class='card mb-3 col-sm'>
+                <div class='card mb-3 col-sm weather-data-card'>
                     <div class='card-body'>
-                        <span>{{ city_data.temperature_max }}&#176;</span>
                         <p><strong>Today's Min</strong></p>
+                        <span>{{ city_data.temperature_max }}&#176;</span>
                     </div>
                 </div>
-                <div class='card mb-3 col-sm'>
+                <div class='card mb-3 col-sm weather-data-card'>
                     <div class='card-body'>
-                        <span>{{ city_data.temperature_feels_like }}&#176;</span>
                         <p><strong>Feels Like</strong></p>
+                        <span>{{ city_data.temperature_feels_like }}&#176;</span>
                     </div>
                 </div>
             </div>
 
             <div class='row'>
-                <div class='card mb-3 col-sm'>
-                    <div class='card-body'>
+                <div class='card mb-3 col-sm weather-data-card' style="text-align: center;">
+                    <div class='card-body' style="padding: 20px 0px">
+                        <p style="width: 140px"><strong>Cloud Coverage</strong></p>
                         <span>{{ city_data.clouds }}%</span>
-                        <p><strong>Coverage</strong></p>
                     </div>
                 </div>
-                <div class='card mb-3 col-sm'>
+                <div class='card mb-3 col-sm weather-data-card'>
                     <div class='card-body'>
-                        <span>{{ city_data.pressure }} hPa</span>
                         <p><strong>Pressure</strong></p>
+                        <span>{{ city_data.pressure }} hPa</span>
                     </div>
                 </div>
-                <div class='card mb-3 col-sm'>
+                <div class='card mb-3 col-sm weather-data-card'>
                     <div class='card-body'>
-                        <span>{{ city_data.humidity }}%</span>
                         <p><strong>Humidity</strong></p>
+                        <span>{{ city_data.humidity }}%</span>
                     </div>
                 </div>
             </div>
 
             <div class='row'>
-                <div class='card mb-3'>
+                <div class='card mb-3 col-sm weather-data-card'>
                     <div class='card-body'>
-                        <span>{{ city_data.sunrise }} am</span>
                         <p><strong>Sunrise</strong></p>
+                        <span>{{ city_data.sunrise }} am</span>
                     </div>
                 </div>
-                <div class='card mb-3'>
+                <div class='card mb-3 col-sm weather-data-card'>
                     <div class='card-body'>
-                        <span>{{ city_data.sunset }} pm</span>
                         <p><strong>Sunset</strong></p>
+                        <span>{{ city_data.sunset }} pm</span>
                     </div>
                 </div>
-                <div class='card mb-3'>
+                <div class='card mb-3 col-sm weather-data-card'>
                     <div class='card-body'>
-                        <span>{{ city_data.hireability }}</span>
-                        <p>(With a chance)</p>
                         <p><strong>Hireability</strong></p>
+                        <span>{{ city_data.hireability }}</span>
+                        <p style="font-size: 10px;">(With a chance)</p>
                     </div>
                 </div>
             </div>
