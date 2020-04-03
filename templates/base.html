@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewpoint" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
     
@@ -37,8 +38,6 @@
     <script>
         document.getElementById("date").innerHTML = Date();
 
-        <!--TODO Hide map when not on cities view-->
-        <!--TODO Move access toke to server-->
         mapboxgl.accessToken = 'pk.eyJ1IjoiaGF5LTBsZSIsImEiOiJjazhrZ3RuZ3QwMXF1M2ZvMDZsdGo5YmVqIn0.57JkL1uYa7ZdJccsH4yEQg';
         var map = new mapboxgl.Map({
             container: 'map',
@@ -48,6 +47,29 @@
         });
 
         map.addControl(new mapboxgl.NavigationControl());
+
+        map.on('load', () => {
+            console.log("Map loaded")
+
+            $.getJSON('/static/coordinates.geojson', (geojson) => {
+                console.log("GEOJSON", geojson)
+                geojson.features.forEach((marker) => {
+                    console.log("Marker", marker.geometry)
+
+                    // create a HTML element for each feature
+                    var el = document.createElement('div');
+                    el.className = 'marker';
+
+                    // make a marker for each feature and add to the map
+                    new mapboxgl.Marker(el)
+                    .setLngLat(marker.geometry.coordinates)
+                    .addTo(map);
+                });
+            }).fail(function (jqxhr, status, error) { 
+                console.log('error', status, error) }
+            );
+            console.log("AFTWR")
+        })
    
     </script>
 </body>
