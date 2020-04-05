@@ -36,8 +36,10 @@
 
 
     <script>
+        //Adds todays date to navbar
         document.getElementById("date").innerHTML = Date();
 
+        //Map  -- creates, adds controls, sets markers for each of user's cities
         mapboxgl.accessToken = 'pk.eyJ1IjoiaGF5LTBsZSIsImEiOiJjazhrZ3RuZ3QwMXF1M2ZvMDZsdGo5YmVqIn0.57JkL1uYa7ZdJccsH4yEQg';
         var map = new mapboxgl.Map({
             container: 'map',
@@ -49,26 +51,32 @@
         map.addControl(new mapboxgl.NavigationControl());
 
         map.on('load', () => {
-            console.log("Map loaded")
 
-            $.getJSON('/static/coordinates.geojson', (geojson) => {
-                console.log("GEOJSON", geojson)
+            $.getJSON('/static/data/coordinates.geojson', (geojson) => {
+
                 geojson.features.forEach((marker) => {
-                    console.log("Marker", marker.geometry)
 
-                    // create a HTML element for each feature
-                    var el = document.createElement('div');
-                    el.className = 'marker';
+                    let element = document.createElement('div');
+                    element.className = 'marker';
+                    
+                    element.innerHTML = marker.properties.is_home === 'True' ? 
+                        '<i class="fa fa-home"></i>' : '<i class="fas fa-map-marker-alt"></i>'
 
-                    // make a marker for each feature and add to the map
-                    new mapboxgl.Marker(el)
+                    element.style.width = marker.properties.iconSize[0] + 'px';
+                    element.style.height = marker.properties.iconSize[1] + 'px';
+                    
+                    element.addEventListener('click', function() {
+                        window.alert(marker.properties.message);
+                    });
+                    
+                    // add marker to map
+                    new mapboxgl.Marker(element)
                     .setLngLat(marker.geometry.coordinates)
                     .addTo(map);
                 });
             }).fail(function (jqxhr, status, error) { 
-                console.log('error', status, error) }
+                console.log('error: ', status, error) }
             );
-            console.log("AFTWR")
         })
    
     </script>
