@@ -97,7 +97,7 @@ def add_city_coordinates(coordinates, city_name):
         },
         'properties': {
             'message': city_name,
-            'is_home': False,
+            'is_home': "False",
             "iconSize": [40, 40]
         }
     }
@@ -119,4 +119,21 @@ def make_home(city_id):
     new_home = get_object_or_404(StarredCity, pk=city_id)
     new_home.is_home=True
     new_home.save()
+
+    #Update geojson data
+    path_to_coordinates = os.path.join( settings.BASE_DIR, 'static/data/coordinates.geojson' )
+
+    with open(path_to_coordinates) as f:
+        data = json.load(f)
+    
+    for feature in data['features']:
+        if feature['properties']['message'] == new_home.city_name:
+            feature['properties']['is_home'] = 'True'
+        else:
+            feature['properties']['is_home'] = 'False'
+
+
+    with open(path_to_coordinates, 'w') as f:
+        f.write(json.dumps(data))
+
 
