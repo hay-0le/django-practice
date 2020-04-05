@@ -11,6 +11,7 @@ h1 {
     height: 220px;
 }
 
+/* TODO make cards responsive ( start with 3 per row for desktop) */
 .card {
     background-color:rgb(182, 219, 255);
     border-style: double;
