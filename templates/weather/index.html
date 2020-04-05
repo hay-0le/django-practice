@@ -5,30 +5,37 @@
     {% include 'partials/_addCity-form.html' %}
 
     {% if cities_weather_data %}
-        <h1 class="text-center mb-3"> Your Cities:</h1>
+        <div>
 
-        {% for city in cities_weather_data %}
-            <div class="card mb-3 mx-auto" style="width: 18rem; ">
-                <div class="card-body city-card mx-auto">
-
-                    <div id="city-home" style="padding-right: 5px; padding-left:5px;">
-                        <a href="{% url 'weather:city_weather_details' city.city_id %}" style="font-size: 1.4em; font-weight: bold;">{{ city.city }}  </a>
-                        <a href="{% url 'weather:make_home' city.city_id %}" {% if city.is_home %}id="my-home" {% endif %} class="home-btn waves-effect btn" ><i class="fa fa-home" aria-hidden="true"></i></a>
+            <h1 class="text-center mb-3"> Your Cities:</h1>
+            
+            <div id='city-card-container'>      
+                {% for city in cities_weather_data %}
+                <div class="city-card card mb-3 mx-auto" style="width: 18rem; ">
+                    <div class="card-body city-card-body mx-auto">
+                        
+                        <div id="city-home" style="padding-right: 5px; padding-left:5px;">
+                            <a href="{% url 'weather:city_weather_details' city.city_id %}" style="font-size: 1.4em; font-weight: bold;">{{ city.city }}  </a>
+                            <a href="{% url 'weather:make_home' city.city_id %}" {% if city.is_home %}id="my-home" {% endif %} class="home-btn waves-effect btn" ><i class="fa fa-home" aria-hidden="true"></i></a>
+                        </div>
+                        <div id="weather-img" style="text-align: center;">
+                            <img src="http://openweathermap.org/img/w/{{ city.icon }}.png" style="height: 70px; width:70px;" alt="Image">
+                        </div>
+                        <p style="font-size: 2em; text-align: center;"> {{city.temperature }}&#176;</p>
+                        
                     </div>
-                    <div id="weather-img" style="text-align: center;">
-                        <img src="http://openweathermap.org/img/w/{{ city.icon }}.png" style="height: 70px; width:70px;" alt="Image">
-                    </div>
-                    <p style="font-size: 2em; text-align: center;"> {{city.temperature }}&#176;</p>
-                       
                 </div>
+                
+                {% endfor %}
             </div>
-
-        {% endfor %}
+        </div>
 
     {% else %}
         <p>You have no saved cities</p>
 
     {% endif %}
-
-    <div id='map' style='width: 800px; height: 400px;'>I'm the Map</div>
+    <div id='map-container'>
+        <p style="text-align: center; margin: 0; font-size: 0.9em;">I'm the map</p>
+        <div id='map' style='width: 800px; height: 400px;'></div>
+    </div>
 {% endblock %}        
