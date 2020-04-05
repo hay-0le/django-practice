@@ -14,7 +14,8 @@ from .utils import formatTime, getStateName, add_city_coordinates, make_home
 def index(request, city_id = False):
     API_KEY = config("API_KEY")
     url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid=' + API_KEY
-   
+    url_with_state = 'api.openweathermap.org/data/2.5/weather?q={},{}&units=imperial&appid=' + API_KEY
+
    #If city_id passed in, update that city as home
     if city_id:
         make_home(city_id)
@@ -25,14 +26,19 @@ def index(request, city_id = False):
         
         if form.is_valid():
             new_city, sep, state = form.cleaned_data['city_name'].partition(',')
-        
-            #Openweathermaps api doesn't take in state abbreviations
-            #So if user provides input in that format, update state to full state name
-            #TODO figure out why this conditional works in an interpreter but not in here
-            if len(state) and len(state) < 3:
-                state = getStateName(state)
 
-            r = requests.get(url.format(new_city)).json()
+            r = None
+
+            #Openweathermaps api doesn't take in state abbreviations, change ('CA' --> 'California')
+            if len(state) == 2:
+                #TODO ^fix this
+                state = getStateName(state)
+                r = requests.get(url_with_state.format(new_city, state)).json()
+
+            else:
+                r = requests.get(url.format(new_city)).json()
+        
+            
             #TODO handle error if city does not exist to let the user know
 
             city_obj = StarredCity(city_name=r['name'], city_id=r['id'])
