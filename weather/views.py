@@ -2,98 +2,15 @@ import requests
 import os
 
 from decouple import config
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from datetime import datetime
+from django.shortcuts import render
 
 from .forms import CityForm
 from .models import StarredCity 
+from .utils import formatTime, getStateName, add_city_coordinates, make_home
 # import .models import CityWeatherData
 
-#Convert date/time from unix to YYYY:MM:DD HH:MM:SS format
-def formatTime(unix_time):
-    date_time = datetime.fromtimestamp(unix_time).strftime('%Y-%m-%d %H:%M:%S')
 
-    date, sep, time = date_time.partition(' ')
-
-    return {
-        "date": date,
-        "time": time
-    }
-    
-
-#get full state name
-def getStateName(state_initials):
-    state = state_initials.upper()
-
-    states = {
-        "AL": "Alabama",
-        "AK": "Alaska",
-        "AZ": "Arizona",
-        "AR": "Arkansas",
-        "CA": "California",
-        "CO": "Colorado",
-        "CT": "Connecticut",
-        "DE": "Delaware",
-        "FL": "Florida",
-        "GA": "Georgia",
-        "HI": "Hawaii",
-        "ID": "Idaho",
-        "IL": "Illinois",
-        "IN": "Indiana",
-        "IA": "Iowa",
-        "KS": "Kansas",
-        "KY": "Kentucky",
-        "LA": "Louisiana",
-        "ME": "Maine",
-        "MD": "Maryland",
-        "MA": "Massachusetts",
-        "MI": "Michigan",
-        "MN": "Minnesota",
-        "MS": "Mississippi",
-        "MO": "Missouri",
-        "MT": "Montana",
-        "NE": "Nebraska",
-        "NV": "Nevada",
-        "NH": "New Hampshire",
-        "NJ": "New Jersey",
-        "NM": "New Mexico",
-        "NY": "New York",
-        "NC": "North Carolina",
-        "ND": "North Dakota",
-        "OH": "Ohio",
-        "OK": "Oklahoma",
-        "OR": "Oregon",
-        "PA": "Pennsylvania",
-        "RI": "Rhode Island",
-        "SC": "South Carolina",
-        "SD": "South Dakota",
-        "TN": "Tennessee",
-        "TX": "Texas",
-        "UT": "Utah",
-        "VT": "Vermont",
-        "VA": "Virginia",
-        "WA": "Washington",
-        "WV": "West Virginia",
-        "WI": "Wisconsin",
-        "WY": "Wyoming",
-    }
-
-    return states.get(state, "error")
-
-#Update home city
-def make_home(city_id):
-    
-    #Reset old home city is_home to false
-    if StarredCity.objects.filter(is_home=True).exists():
-        StarredCity.objects.filter(is_home=True).update(is_home=False)
-  
-    #update city at city_id to home
-    new_home = get_object_or_404(StarredCity, pk=city_id)
-    new_home.is_home=True
-    new_home.save()
-
-#Search Cities
+#View for main page to render, add cities
 def index(request, city_id = False):
     API_KEY = config("API_KEY")
     url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid=' + API_KEY
@@ -103,6 +20,7 @@ def index(request, city_id = False):
         make_home(city_id)
 
     if request.method == 'POST':
+        #TODO When user adds first city, should coordinates.geojson file be created then? Or set up project with empty features collection template
         form = CityForm(request.POST)
         
         if form.is_valid():
@@ -115,14 +33,14 @@ def index(request, city_id = False):
                 state = getStateName(state)
 
             r = requests.get(url.format(new_city)).json()
-            #TODO handle error if city does not exist
+            #TODO handle error if city does not exist to let the user know
 
             city_obj = StarredCity(city_name=r['name'], city_id=r['id'])
             city_obj.save()
 
-    #TODO print shows that form resets, but is still sending duplicates to db on occasion
+            add_city_coordinates([r['coord']['lon'], r['coord']['lat']], r['name'])
+
     form = CityForm()
-    # print("resetting form", form)
 
     starred_cities_list = StarredCity.objects.order_by('-is_home')
     cities_weather_data = []
@@ -131,12 +49,18 @@ def index(request, city_id = False):
         #Get city data from api
         r = requests.get(url.format(city.city_name)).json()
 
+        #TODO add mapbox access code to env and pass it in from view
         city_weather = {
             'city': city.city_name.capitalize(),
             'city_id': city.city_id,
             'is_home': city.is_home,
             'temperature': round(r['main']['temp'], 1),
             'icon': r['weather'][0]['icon'],
+            'map-api-key': config("GOOGLE_API_KEY"),
+            'coordinates': {
+                'lat': r['coord']['lat'],
+                'lon': r['coord']['lon']
+            }
         }
 
         cities_weather_data.append(city_weather)
@@ -175,8 +99,6 @@ def city_weather_details(request, city_id):
         'sunset': formatTime(r['sys']['sunset'])['time'],
         'date': formatTime(r['sys']['sunset'])['date'],
         'hireability': 'High',
-        # 'rainfall_3h': r['rain']['3h'],
-        # 'snowfall_3h': r['snow']['3h'],
     }
 
     return render(request, 'weather/citydata.html', { 'city_data': city_data})
