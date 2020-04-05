@@ -1,0 +1,23 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-121.32, 44.06] },
+      "properties": {
+        "message": "Bend",
+        "is_home": "True",
+        "iconSize": [40, 40]
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-118.24, 34.05] },
+      "properties": {
+        "message": "Los Angeles",
+        "is_home": false,
+        "iconSize": [40, 40]
+      }
+    }
+  ]
+}
